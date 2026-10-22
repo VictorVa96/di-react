@@ -1,3 +1,5 @@
+import { Footer } from './components';
+
 const App = () => {
   return (
     <>
@@ -213,12 +215,7 @@ const App = () => {
           </article>
         </div>
       </main>
-
-      <footer>
-        <div>
-          <p>GuitarLA - Todos los derechos reservados</p>
-        </div>
-      </footer>
+      <Footer />
     </>
   );
 };
