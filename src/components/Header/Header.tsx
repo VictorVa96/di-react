@@ -1,4 +1,25 @@
+import { useEffect, useState } from 'react';
+import { Cart } from '../Cart';
+
 export const Header = () => {
+  const [isCartOpen, setIsCartOpen] = useState(false);
+
+  useEffect(() => {
+    if (!isCartOpen) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setIsCartOpen(false);
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    document.body.classList.add('overflow-hidden');
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.body.classList.remove('overflow-hidden');
+    };
+  }, [isCartOpen]);
+
   return (
     <header className="relative bg-[url(/img/header.jpg)] bg-cover bg-center py-10">
       <div className="absolute inset-0 bg-black/70"></div>
@@ -15,13 +36,25 @@ export const Header = () => {
         <nav className="flex justify-end md:mt-10 md:w-1/2">
           <button
             type="button"
-            className="w-8 cursor-pointer transition hover:scale-110"
+            className="w-8 cursor-pointer transition hover:scale-110 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
             aria-label="Abrir carrito"
+            aria-expanded={isCartOpen}
+            aria-controls="cart"
+            onClick={() => setIsCartOpen(!isCartOpen)}
           >
             <img className="w-full" src="/img/carrito.png" alt="" />
           </button>
         </nav>
       </div>
+      {isCartOpen && (
+        <>
+          <div
+            className="fixed inset-0 z-20 bg-black/50"
+            onClick={() => setIsCartOpen(false)}
+          ></div>
+          <Cart />
+        </>
+      )}
     </header>
   );
 };
