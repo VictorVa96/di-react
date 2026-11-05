@@ -52,7 +52,9 @@ export const Cart = ({
                 <th className="py-2">Nombre</th>
                 <th className="py-2">Precio</th>
                 <th className="py-2">Cantidad</th>
-                <th></th>
+                <th className="py-2">
+                  <span className="sr-only">Acciones</span>
+                </th>
               </tr>
             </thead>
             <tbody>
