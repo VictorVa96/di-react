@@ -1,11 +1,21 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { CartItem, Guitar } from '../types';
 
 export const MIN_ITEMS = 1;
 export const MAX_ITEMS = 5;
+export const CART_STORAGE_KEY = 'guitarla-cart';
+
+const loadCart = (): CartItem[] => {
+  const stored = localStorage.getItem(CART_STORAGE_KEY);
+  return stored ? JSON.parse(stored) : [];
+};
 
 export const useCart = () => {
-  const [cart, setCart] = useState<CartItem[]>([]);
+  const [cart, setCart] = useState<CartItem[]>(loadCart);
+
+  useEffect(() => {
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
+  }, [cart]);
 
   const addToCart = (guitar: Guitar) => {
     const exists = cart.find((item) => item.id === guitar.id);

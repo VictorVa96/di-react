@@ -2,6 +2,8 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 import App from './App';
+import { CART_STORAGE_KEY } from './hooks';
+import { db } from './data/db';
 
 describe('App', () => {
   it('shows the collection title', () => {
@@ -72,5 +74,20 @@ describe('App', () => {
     );
     expect(within(cart).getByText('El carrito está vacío')).toBeInTheDocument();
     expect(screen.getByText('0 artículos en el carrito')).toBeInTheDocument();
+  });
+  it('restores the cart from localStorage on load', async () => {
+    const user = userEvent.setup();
+    localStorage.setItem(
+      CART_STORAGE_KEY,
+      JSON.stringify([{ ...db[0], quantity: 2 }])
+    );
+
+    render(<App />);
+    await user.click(screen.getByRole('button', { name: 'Abrir carrito' }));
+
+    expect(screen.getByText('2 artículos en el carrito')).toBeInTheDocument();
+    expect(
+      screen.getByRole('complementary', { name: 'Tu carrito' })
+    ).toHaveTextContent('Lukather');
   });
 });

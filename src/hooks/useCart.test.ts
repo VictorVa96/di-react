@@ -1,7 +1,7 @@
 import { act, renderHook } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import type { Guitar } from '../types';
-import { MAX_ITEMS, useCart } from './useCart';
+import { CART_STORAGE_KEY, MAX_ITEMS, useCart } from './useCart';
 
 const lukather: Guitar = {
   id: 1,
@@ -84,5 +84,25 @@ describe('useCart', () => {
     act(() => result.current.clearCart());
 
     expect(result.current.cart).toEqual([]);
+  });
+  it('restores the cart from localStorage', () => {
+    localStorage.setItem(
+      CART_STORAGE_KEY,
+      JSON.stringify([{ ...srv, quantity: 3 }])
+    );
+
+    const { result } = renderHook(() => useCart());
+
+    expect(result.current.cart).toEqual([{ ...srv, quantity: 3 }]);
+  });
+
+  it('saves the cart in localStorage when it changes', () => {
+    const { result } = renderHook(() => useCart());
+
+    act(() => result.current.addToCart(lukather));
+
+    expect(JSON.parse(localStorage.getItem(CART_STORAGE_KEY)!)).toEqual([
+      { ...lukather, quantity: 1 },
+    ]);
   });
 });
