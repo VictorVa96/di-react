@@ -28,13 +28,13 @@ describe('App', () => {
     render(<App />);
 
     await user.click(
-      screen.getByRole('button', { name: 'Agregar al carrito: Lukather' })
+      screen.getByRole('button', { name: 'Agregar al carrito Lukather' })
     );
     await user.click(
-      screen.getByRole('button', { name: 'Agregar al carrito: Lukather' })
+      screen.getByRole('button', { name: 'Agregar al carrito Lukather' })
     );
     await user.click(
-      screen.getByRole('button', { name: 'Agregar al carrito: SRV' })
+      screen.getByRole('button', { name: 'Agregar al carrito SRV' })
     );
     await user.click(screen.getByRole('button', { name: 'Abrir carrito' }));
 
@@ -49,10 +49,10 @@ describe('App', () => {
     render(<App />);
 
     await user.click(
-      screen.getByRole('button', { name: 'Agregar al carrito: Lukather' })
+      screen.getByRole('button', { name: 'Agregar al carrito Lukather' })
     );
     await user.click(
-      screen.getByRole('button', { name: 'Agregar al carrito: SRV' })
+      screen.getByRole('button', { name: 'Agregar al carrito SRV' })
     );
     await user.click(screen.getByRole('button', { name: 'Abrir carrito' }));
     const cart = screen.getByRole('complementary', { name: 'Tu carrito' });

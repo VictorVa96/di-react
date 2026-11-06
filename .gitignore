@@ -30,3 +30,8 @@ storybook-static
 
 # TypeDoc output
 docs/api
+
+
+# Playwright
+playwright-report
+test-results
