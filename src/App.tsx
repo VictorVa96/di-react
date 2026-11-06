@@ -1,35 +1,32 @@
 import { Footer, Guitar, Header } from './components';
 import { useEffect, useState } from 'react';
 import { db } from './data/db';
-import type { CartItem, Guitar as GuitarType } from './types';
+import { useCart } from './hooks';
 
 const App = () => {
   const [guitars] = useState(db);
-  const [cart, setCart] = useState<CartItem[]>([]);
+  const {
+    cart,
+    addToCart,
+    increaseQuantity,
+    decreaseQuantity,
+    removeFromCart,
+    clearCart,
+  } = useCart();
 
   useEffect(() => {
     document.title = `GuitarLA · ${guitars.length} guitarras`;
   }, [guitars]);
 
-  const addToCart = (guitar: GuitarType) => {
-    const exists = cart.find((item) => item.id === guitar.id);
-
-    if (exists) {
-      setCart(
-        cart.map((item) =>
-          item.id === guitar.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        )
-      );
-    } else {
-      setCart([...cart, { ...guitar, quantity: 1 }]);
-    }
-  };
-
   return (
     <>
-      <Header cart={cart} />
+      <Header
+        cart={cart}
+        onIncrease={increaseQuantity}
+        onDecrease={decreaseQuantity}
+        onRemove={removeFromCart}
+        onClear={clearCart}
+      />
 
       <main className="mx-auto mt-10 max-w-6xl px-4">
         <h2 className="text-center text-4xl font-black">Nuestra Colección</h2>

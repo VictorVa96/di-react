@@ -26,3 +26,12 @@ dist-ssr
 
 *storybook.log
 storybook-static
+
+
+# TypeDoc output
+docs/api
+
+
+# Playwright
+playwright-report
+test-results

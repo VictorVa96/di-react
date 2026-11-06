@@ -2,6 +2,8 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 import App from './App';
+import { CART_STORAGE_KEY } from './hooks';
+import { db } from './data/db';
 
 describe('App', () => {
   it('shows the collection title', () => {
@@ -26,13 +28,13 @@ describe('App', () => {
     render(<App />);
 
     await user.click(
-      screen.getByRole('button', { name: 'Agregar al carrito: Lukather' })
+      screen.getByRole('button', { name: 'Agregar al carrito Lukather' })
     );
     await user.click(
-      screen.getByRole('button', { name: 'Agregar al carrito: Lukather' })
+      screen.getByRole('button', { name: 'Agregar al carrito Lukather' })
     );
     await user.click(
-      screen.getByRole('button', { name: 'Agregar al carrito: SRV' })
+      screen.getByRole('button', { name: 'Agregar al carrito SRV' })
     );
     await user.click(screen.getByRole('button', { name: 'Abrir carrito' }));
 
@@ -40,5 +42,52 @@ describe('App', () => {
     expect(within(cart).getAllByRole('row')).toHaveLength(3);
     expect(within(cart).getByText('$947')).toBeInTheDocument();
     expect(screen.getByText('3 artículos en el carrito')).toBeInTheDocument();
+  });
+
+  it('changes quantities, removes items and clears the cart from the panel', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.click(
+      screen.getByRole('button', { name: 'Agregar al carrito Lukather' })
+    );
+    await user.click(
+      screen.getByRole('button', { name: 'Agregar al carrito SRV' })
+    );
+    await user.click(screen.getByRole('button', { name: 'Abrir carrito' }));
+    const cart = screen.getByRole('complementary', { name: 'Tu carrito' });
+
+    await user.click(
+      within(cart).getByRole('button', {
+        name: 'Añadir una unidad de Lukather',
+      })
+    );
+    expect(within(cart).getByText('$947')).toBeInTheDocument();
+
+    await user.click(
+      within(cart).getByRole('button', { name: 'Eliminar SRV del carrito' })
+    );
+    expect(within(cart).getByText('$598')).toBeInTheDocument();
+
+    await user.click(
+      within(cart).getByRole('button', { name: 'Vaciar carrito' })
+    );
+    expect(within(cart).getByText('El carrito está vacío')).toBeInTheDocument();
+    expect(screen.getByText('0 artículos en el carrito')).toBeInTheDocument();
+  });
+  it('restores the cart from localStorage on load', async () => {
+    const user = userEvent.setup();
+    localStorage.setItem(
+      CART_STORAGE_KEY,
+      JSON.stringify([{ ...db[0], quantity: 2 }])
+    );
+
+    render(<App />);
+    await user.click(screen.getByRole('button', { name: 'Abrir carrito' }));
+
+    expect(screen.getByText('2 artículos en el carrito')).toBeInTheDocument();
+    expect(
+      screen.getByRole('complementary', { name: 'Tu carrito' })
+    ).toHaveTextContent('Lukather');
   });
 });
