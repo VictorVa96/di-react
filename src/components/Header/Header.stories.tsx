@@ -1,19 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { db } from '../../data/db';
-import { fn } from 'storybook/test';
 import { Header } from './Header';
 
 const meta = {
   component: Header,
   parameters: {
     layout: 'fullscreen',
-  },
-  args: {
-    cart: [],
-    onIncrease: fn(),
-    onDecrease: fn(),
-    onRemove: fn(),
-    onClear: fn(),
   },
 } satisfies Meta<typeof Header>;
 
@@ -23,7 +15,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {};
 
 export const WithItems: Story = {
-  args: {
+  parameters: {
     cart: [
       { ...db[0], quantity: 2 },
       { ...db[1], quantity: 1 },

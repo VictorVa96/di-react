@@ -1,39 +1,17 @@
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
+import { cartItems, renderWithProviders } from '../../test';
 import type { CartItem } from '../../types';
 import { Cart } from './Cart';
 
-const items: CartItem[] = [
-  {
-    id: 1,
-    name: 'Lukather',
-    image: 'guitarra_01',
-    description: 'Una guitarra de prueba',
-    price: 299,
-    quantity: 2,
-  },
-  {
-    id: 2,
-    name: 'SRV',
-    image: 'guitarra_02',
-    description: 'Otra guitarra de prueba',
-    price: 349,
-    quantity: 1,
-  },
-];
-
 const renderCart = (cart: CartItem[] = []) => {
-  const handlers = {
-    onClose: vi.fn(),
-    onIncrease: vi.fn(),
-    onDecrease: vi.fn(),
-    onRemove: vi.fn(),
-    onClear: vi.fn(),
-  };
-  render(<Cart cart={cart} {...handlers} />);
-  return handlers;
+  const onClose = vi.fn();
+  renderWithProviders(<Cart onClose={onClose} />, { cart });
+  return { onClose };
 };
+
+const row = (name: string) => screen.getByRole('cell', { name }).closest('tr')!;
 
 describe('Cart', () => {
   it('shows the empty message and disables the clear button', () => {
@@ -46,7 +24,7 @@ describe('Cart', () => {
   });
 
   it('shows one row per item and the total', () => {
-    renderCart(items);
+    renderCart(cartItems);
     expect(screen.getByRole('cell', { name: 'Lukather' })).toBeInTheDocument();
     expect(screen.getByRole('cell', { name: 'SRV' })).toBeInTheDocument();
     expect(screen.getByText('$947')).toBeInTheDocument();
@@ -64,27 +42,25 @@ describe('Cart', () => {
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
-  it('calls the quantity handlers with the id of the item', async () => {
+  it('changes the quantity of a line and the total', async () => {
     const user = userEvent.setup();
-    const { onIncrease, onDecrease, onRemove } = renderCart(items);
+    renderCart(cartItems);
 
     await user.click(
       screen.getByRole('button', { name: 'Añadir una unidad de Lukather' })
     );
+    expect(row('Lukather')).toHaveTextContent('3');
+    expect(screen.getByText('$1246')).toBeInTheDocument();
+
     await user.click(
       screen.getByRole('button', { name: 'Quitar una unidad de Lukather' })
     );
-    await user.click(
-      screen.getByRole('button', { name: 'Eliminar SRV del carrito' })
-    );
-
-    expect(onIncrease).toHaveBeenCalledWith(1);
-    expect(onDecrease).toHaveBeenCalledWith(1);
-    expect(onRemove).toHaveBeenCalledWith(2);
+    expect(row('Lukather')).toHaveTextContent('2');
+    expect(screen.getByText('$947')).toBeInTheDocument();
   });
 
   it('disables the decrease button at the minimum quantity', () => {
-    renderCart(items);
+    renderCart(cartItems);
     expect(
       screen.getByRole('button', { name: 'Quitar una unidad de SRV' })
     ).toBeDisabled();
@@ -94,18 +70,30 @@ describe('Cart', () => {
   });
 
   it('disables the increase button at the maximum quantity', () => {
-    renderCart([{ ...items[0], quantity: 5 }]);
+    renderCart([{ ...cartItems[0], quantity: 5 }]);
     expect(
       screen.getByRole('button', { name: 'Añadir una unidad de Lukather' })
     ).toBeDisabled();
   });
 
-  it('calls onClear when the clear button is clicked', async () => {
+  it('removes a line', async () => {
     const user = userEvent.setup();
-    const { onClear } = renderCart(items);
+    renderCart(cartItems);
+
+    await user.click(
+      screen.getByRole('button', { name: 'Eliminar SRV del carrito' })
+    );
+
+    expect(screen.queryByRole('cell', { name: 'SRV' })).not.toBeInTheDocument();
+    expect(screen.getByText('$598')).toBeInTheDocument();
+  });
+
+  it('clears the cart', async () => {
+    const user = userEvent.setup();
+    renderCart(cartItems);
 
     await user.click(screen.getByRole('button', { name: 'Vaciar carrito' }));
 
-    expect(onClear).toHaveBeenCalledTimes(1);
+    expect(screen.getByText('El carrito está vacío')).toBeInTheDocument();
   });
 });
