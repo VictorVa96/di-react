@@ -1,38 +1,12 @@
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
+import { cartItems, renderWithProviders } from '../../test';
 import type { CartItem } from '../../types';
 import { Header } from './Header';
 
 const renderHeader = (cart: CartItem[] = []) =>
-  render(
-    <Header
-      cart={cart}
-      onIncrease={vi.fn()}
-      onDecrease={vi.fn()}
-      onRemove={vi.fn()}
-      onClear={vi.fn()}
-    />
-  );
-
-const items: CartItem[] = [
-  {
-    id: 1,
-    name: 'Lukather',
-    image: 'guitarra_01',
-    description: 'Una guitarra de prueba',
-    price: 299,
-    quantity: 2,
-  },
-  {
-    id: 2,
-    name: 'SRV',
-    image: 'guitarra_02',
-    description: 'Otra guitarra de prueba',
-    price: 349,
-    quantity: 1,
-  },
-];
+  renderWithProviders(<Header />, { cart });
 
 describe('Header', () => {
   it('shows the logo linking to the home page', () => {
@@ -78,7 +52,7 @@ describe('Header', () => {
     ).not.toBeInTheDocument();
   });
   it('shows the number of items in the cart', () => {
-    renderHeader(items);
+    renderHeader(cartItems);
     expect(screen.getByText('3')).toBeInTheDocument();
     expect(screen.getByText('3 artículos en el carrito')).toBeInTheDocument();
   });

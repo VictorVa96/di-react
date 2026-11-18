@@ -9,12 +9,7 @@ const meta = {
     layout: 'fullscreen',
   },
   args: {
-    cart: [],
     onClose: fn(),
-    onIncrease: fn(),
-    onDecrease: fn(),
-    onRemove: fn(),
-    onClear: fn(),
   },
 } satisfies Meta<typeof Cart>;
 
@@ -24,7 +19,7 @@ type Story = StoryObj<typeof meta>;
 export const Empty: Story = {};
 
 export const WithItems: Story = {
-  args: {
+  parameters: {
     cart: [
       { ...db[0], quantity: 2 },
       { ...db[1], quantity: 1 },
