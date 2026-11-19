@@ -1,5 +1,6 @@
 import type { Preview } from '@storybook/react-vite';
 import { CartProvider } from '../src/context';
+import { createMemoryRouter, RouterProvider } from 'react-router';
 import { CART_STORAGE_KEY } from '../src/hooks';
 
 import '../src/index.css';
@@ -12,11 +13,20 @@ const preview: Preview = {
         CART_STORAGE_KEY,
         JSON.stringify(parameters.cart ?? [])
       );
-      return (
-        <CartProvider>
-          <Story />
-        </CartProvider>
-      );
+
+      if (parameters.router === false) return <Story />;
+
+      const router = createMemoryRouter([
+        {
+          path: '*',
+          element: (
+            <CartProvider>
+              <Story />
+            </CartProvider>
+          ),
+        },
+      ]);
+      return <RouterProvider router={router} />;
     },
   ],
   parameters: {

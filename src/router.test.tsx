@@ -1,31 +1,31 @@
-import { render, screen, within } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
-import App from './App';
+import { renderApp } from './test';
 import { CART_STORAGE_KEY } from './hooks';
 import { db } from './data/db';
 
-describe('App', () => {
+describe('Routes', () => {
   it('shows the collection title', () => {
-    render(<App />);
+    renderApp();
     expect(
       screen.getByRole('heading', { name: 'Nuestra Colección' })
     ).toBeInTheDocument();
   });
 
   it('shows one card per guitar in the catalogue', () => {
-    render(<App />);
+    renderApp();
     expect(screen.getAllByRole('article')).toHaveLength(12);
   });
 
   it('updates the document title with the number of guitars', () => {
-    render(<App />);
+    renderApp();
     expect(document.title).toBe('GuitarLA · 12 guitarras');
   });
 
   it('adds guitars to the cart and shows them in the panel', async () => {
     const user = userEvent.setup();
-    render(<App />);
+    renderApp();
 
     await user.click(
       screen.getByRole('button', { name: 'Agregar al carrito Lukather' })
@@ -46,7 +46,7 @@ describe('App', () => {
 
   it('changes quantities, removes items and clears the cart from the panel', async () => {
     const user = userEvent.setup();
-    render(<App />);
+    renderApp();
 
     await user.click(
       screen.getByRole('button', { name: 'Agregar al carrito Lukather' })
@@ -82,12 +82,38 @@ describe('App', () => {
       JSON.stringify([{ ...db[0], quantity: 2 }])
     );
 
-    render(<App />);
+    renderApp();
     await user.click(screen.getByRole('button', { name: 'Abrir carrito' }));
 
     expect(screen.getByText('2 artículos en el carrito')).toBeInTheDocument();
     expect(
       screen.getByRole('complementary', { name: 'Tu carrito' })
     ).toHaveTextContent('Lukather');
+  });
+
+  it('navigates to the new guitar page from the header', async () => {
+    const user = userEvent.setup();
+    renderApp();
+
+    await user.click(screen.getByRole('link', { name: 'Añadir guitarra' }));
+
+    expect(
+      screen.getByRole('heading', { name: 'Nueva guitarra' })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: 'Añadir guitarra' })
+    ).toHaveAttribute('aria-current', 'page');
+    expect(document.title).toBe('Nueva guitarra · GuitarLA');
+  });
+
+  it('shows the not found page for an unknown route', () => {
+    renderApp('/no-existe');
+
+    expect(
+      screen.getByRole('heading', { name: 'Página no encontrada' })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: 'Volver al catálogo' })
+    ).toHaveAttribute('href', '/');
   });
 });

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link, NavLink } from 'react-router';
 import { useCartContext } from '../../context';
 import { Cart } from '../Cart';
 
@@ -28,15 +29,21 @@ export const Header = () => {
       <div className="absolute inset-0 bg-black/70"></div>
 
       <div className="relative mx-auto flex max-w-6xl flex-col items-center gap-8 px-4 md:flex-row md:items-start md:justify-between">
-        <a href="/" className="w-2/3 md:w-1/4">
+        <Link to="/" className="w-2/3 md:w-1/4">
           <img
             className="w-full"
             src="/img/logo.svg"
             alt="Logotipo de GuitarLA"
           />
-        </a>
+        </Link>
 
-        <nav className="flex justify-end md:mt-10 md:w-1/2">
+        <nav className="flex items-center justify-end gap-6 md:mt-10 md:w-1/2">
+          <NavLink
+            to="/guitars/new"
+            className="font-bold text-white uppercase underline-offset-4 transition hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white aria-[current=page]:underline"
+          >
+            Añadir guitarra
+          </NavLink>
           <div className="relative">
             <button
               type="button"
