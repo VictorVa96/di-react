@@ -1,15 +1,27 @@
 import { isRouteErrorResponse, Link, useRouteError } from 'react-router';
 import { useDocumentTitle } from '../../hooks';
+import { NotFound } from '../NotFound';
+
+const describeError = (error: unknown) => {
+  if (isRouteErrorResponse(error)) {
+    return typeof error.data === 'string'
+      ? error.data
+      : `${error.status} ${error.statusText}`;
+  }
+  return error instanceof Error ? error.message : 'Error desconocido';
+};
 
 export const RouteError = () => {
   const error = useRouteError();
-  useDocumentTitle('Algo ha fallado · GuitarLA');
+  const isNotFound = isRouteErrorResponse(error) && error.status === 404;
 
-  const message = isRouteErrorResponse(error)
-    ? `${error.status} ${error.statusText}`
-    : error instanceof Error
-      ? error.message
-      : 'Error desconocido';
+  if (isNotFound) return <NotFound message={describeError(error)} />;
+
+  return <ErrorPage message={describeError(error)} />;
+};
+
+const ErrorPage = ({ message }: { message: string }) => {
+  useDocumentTitle('Algo ha fallado · GuitarLA');
 
   return (
     <div className="text-center">
