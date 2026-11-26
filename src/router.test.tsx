@@ -3,24 +3,27 @@ import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 import { renderApp } from './test';
 import { CART_STORAGE_KEY } from './hooks';
-import { db } from './data/db';
+import { guitars } from './test/fixtures';
 
 describe('Routes', () => {
-  it('shows the collection title', () => {
+  it('shows a loading message and then the collection title', async () => {
     renderApp();
+    expect(screen.getByRole('status')).toHaveTextContent('Cargando…');
     expect(
-      screen.getByRole('heading', { name: 'Nuestra Colección' })
+      await screen.findByRole('heading', { name: 'Nuestra Colección' })
     ).toBeInTheDocument();
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
   });
 
-  it('shows one card per guitar in the catalogue', () => {
+  it('shows one card per guitar in the catalogue', async () => {
     renderApp();
-    expect(screen.getAllByRole('article')).toHaveLength(12);
+    expect(await screen.findAllByRole('article')).toHaveLength(3);
   });
 
-  it('updates the document title with the number of guitars', () => {
+  it('updates the document title with the number of guitars', async () => {
     renderApp();
-    expect(document.title).toBe('GuitarLA · 12 guitarras');
+    await screen.findByRole('heading', { name: 'Nuestra Colección' });
+    expect(document.title).toBe('GuitarLA · 3 guitarras');
   });
 
   it('adds guitars to the cart and shows them in the panel', async () => {
@@ -28,7 +31,7 @@ describe('Routes', () => {
     renderApp();
 
     await user.click(
-      screen.getByRole('button', { name: 'Agregar al carrito Lukather' })
+      await screen.findByRole('button', { name: 'Agregar al carrito Lukather' })
     );
     await user.click(
       screen.getByRole('button', { name: 'Agregar al carrito Lukather' })
@@ -49,7 +52,7 @@ describe('Routes', () => {
     renderApp();
 
     await user.click(
-      screen.getByRole('button', { name: 'Agregar al carrito Lukather' })
+      await screen.findByRole('button', { name: 'Agregar al carrito Lukather' })
     );
     await user.click(
       screen.getByRole('button', { name: 'Agregar al carrito SRV' })
@@ -79,11 +82,13 @@ describe('Routes', () => {
     const user = userEvent.setup();
     localStorage.setItem(
       CART_STORAGE_KEY,
-      JSON.stringify([{ ...db[0], quantity: 2 }])
+      JSON.stringify([{ ...guitars[0], quantity: 2 }])
     );
 
     renderApp();
-    await user.click(screen.getByRole('button', { name: 'Abrir carrito' }));
+    await user.click(
+      await screen.findByRole('button', { name: 'Abrir carrito' })
+    );
 
     expect(screen.getByText('2 artículos en el carrito')).toBeInTheDocument();
     expect(
@@ -95,7 +100,9 @@ describe('Routes', () => {
     const user = userEvent.setup();
     renderApp();
 
-    await user.click(screen.getByRole('link', { name: 'Añadir guitarra' }));
+    await user.click(
+      await screen.findByRole('link', { name: 'Añadir guitarra' })
+    );
 
     expect(
       screen.getByRole('heading', { name: 'Nueva guitarra' })
@@ -106,7 +113,7 @@ describe('Routes', () => {
     expect(document.title).toBe('Nueva guitarra · GuitarLA');
   });
 
-  it('shows the not found page for an unknown route', () => {
+  it('shows the not found page for an unknown route', async () => {
     renderApp('/no-existe');
 
     expect(
@@ -121,7 +128,7 @@ describe('Routes', () => {
     const user = userEvent.setup();
     renderApp();
 
-    await user.click(screen.getByRole('link', { name: 'SRV' }));
+    await user.click(await screen.findByRole('link', { name: 'SRV' }));
 
     expect(
       await screen.findByRole('heading', { level: 1, name: 'SRV' })

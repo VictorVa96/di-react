@@ -35,3 +35,6 @@ docs/api
 # Playwright
 playwright-report
 test-results
+
+# Environment variables with the Supabase keys
+.env

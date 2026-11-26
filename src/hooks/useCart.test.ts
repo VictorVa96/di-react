@@ -1,23 +1,9 @@
 import { act, renderHook } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import type { Guitar } from '../types';
+import { guitars } from '../test/fixtures';
 import { CART_STORAGE_KEY, MAX_ITEMS, useCart } from './useCart';
 
-const lukather: Guitar = {
-  id: 1,
-  name: 'Lukather',
-  image: 'guitarra_01',
-  description: 'Una guitarra de prueba',
-  price: 299,
-};
-
-const srv: Guitar = {
-  id: 2,
-  name: 'SRV',
-  image: 'guitarra_02',
-  description: 'Otra guitarra de prueba',
-  price: 349,
-};
+const [lukather, srv] = guitars;
 
 describe('useCart', () => {
   it('starts with an empty cart', () => {
