@@ -27,6 +27,9 @@ describe('Cart', () => {
     renderCart(cartItems);
     expect(screen.getByRole('cell', { name: 'Lukather' })).toBeInTheDocument();
     expect(screen.getByRole('cell', { name: 'SRV' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('img', { name: 'Guitarra Lukather' })
+    ).toHaveAttribute('src', '/img/guitarra_01.jpg');
     expect(screen.getByText('$947')).toBeInTheDocument();
     expect(
       screen.getByRole('button', { name: 'Vaciar carrito' })

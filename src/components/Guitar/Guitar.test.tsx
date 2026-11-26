@@ -2,16 +2,10 @@ import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { renderWithProviders } from '../../test';
-import type { Guitar as GuitarType } from '../../types';
+import { guitars } from '../../test/fixtures';
 import { Guitar } from './Guitar';
 
-const guitar: GuitarType = {
-  id: 1,
-  name: 'Lukather',
-  image: 'guitarra_01',
-  description: 'Una guitarra de prueba',
-  price: 299,
-};
+const guitar = guitars[0];
 
 describe('Guitar', () => {
   it('shows the name, image, description and price of the guitar', () => {
@@ -32,7 +26,7 @@ describe('Guitar', () => {
   it('calls onAddToCart with the guitar when the button is clicked', async () => {
     const user = userEvent.setup();
     const onAddToCart = vi.fn();
-    renderWithProviders(<Guitar guitar={guitar} onAddToCart={vi.fn()} />);
+    renderWithProviders(<Guitar guitar={guitar} onAddToCart={onAddToCart} />);
 
     await user.click(
       screen.getByRole('button', { name: 'Agregar al carrito Lukather' })

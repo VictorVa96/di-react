@@ -2,8 +2,12 @@ import type { Preview } from '@storybook/react-vite';
 import { CartProvider } from '../src/context';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { CART_STORAGE_KEY } from '../src/hooks';
+import { sb } from 'storybook/test';
 
 import '../src/index.css';
+
+// Stories use the fake catalogue in src/api/guitars/__mocks__, not Supabase.
+sb.mock(import('../src/api/guitars/guitars.ts'));
 
 const preview: Preview = {
   tags: ['autodocs'],
